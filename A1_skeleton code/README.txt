@@ -1,0 +1,1 @@
+Not completed: consecutive fruits removal.
