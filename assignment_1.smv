@@ -1,0 +1,76 @@
+MODULE main
+VAR
+  TA: {red, green};
+  TB: {red, green};
+  BA: 0..5;
+  BB: 0..5;
+  WA: process counterA(TA,BA);
+  WB: process counterB(TB,BB);
+ASSIGN
+  init(TA) := red;
+  init(TB) := red;
+  init(BA) := 5;
+  init(BB) := 5;
+  next(TA) := 
+    case
+      WA.counts >= 1 & WB.counts = 0: green;
+      TA = red & TB = red & WA.counts >= 1 & WB.counts >= 1: {red, green};
+      TA = green & (BA = 0 | WA.counts = 0) & BB > 0: red; 
+      TA = green & (BA = 0 | WA.counts = 0) & BB = 0: TA; 
+      BA = 0 & WB.counts > 0: green;
+      BA = 0 & WB.counts = 0: TA;
+      TRUE : TA;
+    esac;
+  next(TB) := 
+    case
+      WB.counts >= 1 & WA.counts = 0: green;
+      TA = red & TB = red & WA.counts >= 1 & WB.counts >= 1: {red, green};
+      TB = green & (BB = 0 | WB.counts = 0) & BA > 0: red; 
+      TB = green & (BB = 0 | WB.counts = 0) & BA = 0: TB;
+      BB = 0 & WA.counts > 0: green;
+      BB = 0 & WA.counts = 0: TB;
+      TRUE : TB;
+    esac;
+  next(BA) :=
+    case
+      TA = green & BA > 0: BA - 1; 
+      TA = green & BA = 0: BA;
+      TA = red : 5;
+    esac;
+  next(BB) :=
+    case
+      TB = green & BB > 0: BB - 1; 
+      TB = green & BB = 0: BB;
+      TB = red : 5;
+    esac;
+-- LTL specs one and two
+LTLSPEC !G(TA = green & TB = green)
+LTLSPEC G(TB = red -> X(X(F(TB = green))))
+
+MODULE counterA(TA,BA)
+VAR
+  counts : 0..10;
+ASSIGN 
+  init(counts) := 0;
+  next(counts) :=
+    case
+      TA = green & BA > 0 & counts > 0: counts - 1;
+      TA = green & BA > 0 & counts = 0: counts;
+      TA = green & BA = 0: counts;
+      TA = red & counts < 10: counts + 1;
+      TA = red & counts = 10: counts;
+    esac;
+
+MODULE counterB(TB,BB)
+VAR
+  counts : 0..10;
+ASSIGN 
+  init(counts) := 0;
+  next(counts) :=
+    case
+      TB = green & BB > 0 & counts > 0: counts - 1;
+      TB = green & BB > 0 & counts = 0: counts;
+      TB = green & BB = 0: counts;
+      TB = red & counts < 10: counts + 1;
+      TB = red & counts = 10: counts;
+    esac;
