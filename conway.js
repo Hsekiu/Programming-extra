@@ -42,16 +42,26 @@ function drawCell(x, y, state) {
 	context.fill()
 }
 
+function modMath(x) {
+	var res = 0;
+
+	if (x >= 0) {
+		res = x%numCells;
+	} else {
+		res = (x)%numCells + numCells;
+	}
+	return res;
+}
+
 function alive(x, y, cells2d) {
 	var count = 0;
 
 	for(var i = 0; i < directions.length; i++) {
-		var xd = directions[i][0];
-		var yd = directions[i][1];
-		if(((xd + x) >= 0 && (xd + x) <= numCells) && ((yd + y) >= 0 && (yd + y) <= numCells)){
-			if(cells2d[xd + x][yd + y] == true) {
-				count++;
-			}
+		var xd = modMath(directions[i][0] + x);
+		var yd = modMath(directions[i][1] + y);
+
+		if(cells2d[xd][yd] == true) {
+			count++;
 		}
 	}
 	return count;
@@ -59,8 +69,8 @@ function alive(x, y, cells2d) {
 
 function step(cells2d) {
 	var steparr = drawStage();
-	for(var i = 0; i < cells2d.length-1; i++) {
-        for(var j = 0; j < cells2d[i].length-1; j++) {
+	for(var i = 0; i < cells2d.length; i++) {
+        for(var j = 0; j < cells2d[i].length; j++) {
 
         	//Check conditions on live cells
         	if (cells2d[i][j] == true) {
@@ -84,20 +94,12 @@ function step(cells2d) {
 
 var cells2d = [];
 cells2d = drawGame(drawStage(cells2d));
-//cells2d[2][3] = true;
-//cells2d[3][3] = true;
-//cells2d[1][3] = true;
-//cells2d[2][1] = true;
-//cells2d[3][2] = true;
-cells2d[0][0] = true;
-cells2d[0][1] = true;
-cells2d[1][1] = true;
-cells2d[1][0] = true;
+cells2d[2][3] = true;
+cells2d[3][3] = true;
+cells2d[1][3] = true;
+cells2d[2][1] = true;
+cells2d[3][2] = true;
 
-cells2d[numCells - 1][numCells -1] = true;
-cells2d[numCells - 2][numCells - 2] = true;
-cells2d[numCells - 1][numCells - 2] = true;
-cells2d[numCells - 2][numCells - 1] = true;
 drawGame(cells2d);
 var myStep = setInterval(main, 100);
 
