@@ -1,0 +1,1 @@
+Consists of old school assignments for various classes.
