@@ -1,1 +1,1 @@
-Consists of old school assignments for various classes.
+A collection of miscellaneous assignments and small programs.
